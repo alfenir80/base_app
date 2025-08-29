@@ -1,0 +1,38 @@
+.cardapio {
+  margin-top: 2rem;
+  border-top: 1px solid #ccc; /* Linha divisória sutil */
+  padding-top: 1.5rem;
+}
+
+.cardapio h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #000;
+}
+
+.cardapio ul {
+  list-style: none; /* Remove os pontos da lista */
+  padding: 0;
+  margin: 0;
+}
+
+.cardapio li {
+  background-color: #f4f4f4;
+  color: #333;
+  padding: 12px 15px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease;
+
+  /* Para alinhar o nome e o preço */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cardapio li:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px); /* Efeito de "levitação" ao passar o mouse */
+}
+
