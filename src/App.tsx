@@ -17,6 +17,12 @@ type ItemMenuType = {
   categoria: string;
 };
 
+type OrderItemType = {
+  id: number;
+  item: ItemMenuType;
+  quantidade: number;
+};
+
 const menu: ItemMenuType[] = [
   { id: 1, nome: 'Coxinha', preco: 5.0, categoria: 'Salgado' },
   { id: 2, nome: 'Brigadeiro', preco: 3.0, categoria: 'Doce' },
@@ -36,6 +42,23 @@ function App() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMesa, setSelectedMesa] = useState<MesaType | null>(null);  
+  const [orders, setOrders] = useState<OrderItemType[]>([]);
+
+  const handAddItemToOrder = (item: ItemMenuType) => {
+
+    const existingOrder = orders.find((order) => order.item.id === item.id);
+    if (existingOrder) {
+      setOrders(orders.map((order) =>
+        order.item.id === item.id
+          ? { ...order, quantidade: order.quantidade + 1 }
+          : order
+      ));
+    } else {
+      setOrders([...orders, { id: orders.length + 1, item, quantidade: 1 }]);
+    }
+  };
+
+
 
 
   const handleClickMesa = (numero: number) => {
@@ -52,33 +75,46 @@ function App() {
   }
 
   return (
-    <div className="container-geral">
-      <h1>Gerenciamento de Mesas</h1>
-      <div className="lista-mesas">
-        {mesas.map((mesa) => (
-          <Mesa
-            key={mesa.numero}
-            numero={mesa.numero}
-            status={mesa.status}
-            onClick={() => handleClickMesa(mesa.numero)}
-          />
-        ))}
-      </div>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        title={selectedMesa ? `Mesa ${selectedMesa.numero}` : ''}
-      >
-        {selectedMesa && (
-          <div>
-            <p>Status: {selectedMesa.status}</p>
-            {/* Aqui você pode adicionar mais detalhes ou ações para a mesa */}
-            <Cardapio itens={menu} />
+    <>
+        <div className="container-geral">
+          <h1>Gerenciamento de Mesas</h1>
+          <div className="lista-mesas">
+            {mesas.map((mesa) => (
+              <Mesa
+                key={mesa.numero}
+                numero={mesa.numero}
+                status={mesa.status}
+                onClick={() => handleClickMesa(mesa.numero)}
+              />
+            ))}
           </div>
-        )}
-      </Modal>
-    </div>
-
+          <Modal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            title={selectedMesa ? `Mesa ${selectedMesa.numero}` : ''}
+          >
+            {selectedMesa && (
+              <div className='modal-body'>
+                <p>Status: {selectedMesa.status}</p>
+                {/* Aqui você pode adicionar mais detalhes ou ações para a mesa */}
+                <Cardapio itens={menu} onAddItem={handAddItemToOrder}/>
+                <h3>Pedido Atual:</h3>
+                {orders.length === 0 ? (
+                  <p>Nenhum item adicionado.</p>
+                ) : (
+                  <ul>
+                    {orders.map((order) => (
+                      <li key={order.id}>
+                        {order.item.nome} - Quantidade: {order.quantidade} - Total: R$ {(order.item.preco * order.quantidade).toFixed(2)}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </Modal>
+        </div>
+     </>   
   );
 }
 

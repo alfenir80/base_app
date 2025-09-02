@@ -36,3 +36,29 @@
   transform: translateY(-2px); /* Efeito de "levitação" ao passar o mouse */
 }
 
+/* Estilos para a lista de pedidos dentro do modal */
+.modal-body h3 {
+  font-size: 1.2rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.modal-body ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modal-body ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
+  color: #000;
+}
+
+.modal-body ul li:last-child {
+  border-bottom: none;
+}
