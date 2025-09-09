@@ -1,0 +1,90 @@
+/* src/pages/GerenciadorPedidosPage.css */
+.p-4 {
+  padding: 1rem; /* Exemplo: padrão do Tailwind */
+}
+
+.text-2xl {
+  font-size: 1.5rem; /* Exemplo: padrão do Tailwind */
+}
+
+.font-bold {
+  font-weight: bold;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.grid-cols-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* Exemplo: padrão do Tailwind */
+}
+
+.md\:grid-cols-5 {
+  @media (min-width: 768px) { /* Media query para telas maiores */
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.gap-4 {
+  gap: 1rem; /* Exemplo: padrão do Tailwind */
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+/* Estilos para o Modal e seus conteúdos (adaptados do que já fizemos) */
+.modal-overlay {
+  /* ... seus estilos para o overlay ... */
+}
+
+.modal-content {
+  /* ... seus estilos para o conteúdo do modal ... */
+}
+
+.modal-header {
+  /* ... seus estilos para o header do modal ... */
+}
+
+.modal-close-button {
+  /* ... seus estilos para o botão de fechar ... */
+}
+
+.modal-body {
+  /* ... seus estilos para o corpo do modal ... */
+}
+
+/* Estilos específicos para a lista de pedidos dentro do modal */
+.modal-body h2 { /* Aqui o H2 está sendo usado para "Pedido Atual" */
+  font-size: 1.2rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.modal-body ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modal-body ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
+}
+
+.modal-body ul li:last-child {
+  border-bottom: none;
+}
