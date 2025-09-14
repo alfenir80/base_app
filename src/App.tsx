@@ -1,4 +1,5 @@
 // src/App.tsx
+import './App.css'
 import GerenciadorPedidosPage from './pages/GerenciadorPedidosPage';
 
 function App() {

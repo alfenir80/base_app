@@ -1,3 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
 :root {
   /* Definindo variáveis CSS para cores e espaçamento */
   --cor-fundo-principal: #242424;

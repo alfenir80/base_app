@@ -1,22 +1,31 @@
 
-import '../components/Mesa.css';
+import React from 'react';
 
-type StatusMesa = 'disponivel' | 'ocupada' ;
+type StatusMesa = 'disponivel' | 'ocupada';
 
 interface MesaProps {
-    numero: number;
-    status?: StatusMesa;
-    onClick?: () => void;
+    mesa: {
+      numero: number;
+      status: StatusMesa;
+    };
+    onClick: () => void;
 }
 
-function Mesa({ numero, status, onClick}: MesaProps) {
-    
-    const statusClass = status ? `mesa-${status}` : '';
+function Mesa({ mesa, onClick }: MesaProps) {
+    const statusClass = mesa.status === 'disponivel'
+        ? 'bg-green-500 hover:bg-green-600 cursor-pointer'
+        : 'bg-red-500 cursor-not-allowed';
 
     return (
-        <div className={`mesa ${statusClass}`} onClick={onClick}>
-            <p className='numero-mesa'>Mesa {numero}</p>
-            <span className='status-mesa'>Status: {status}</span>
+        <div 
+            className={`
+                p-6 rounded-lg text-center font-bold text-white transition-colors duration-200
+                ${statusClass}
+            `} 
+            onClick={onClick}
+        >
+            <p className='text-3xl mb-2'>Mesa {mesa.numero}</p>
+            <span className='text-sm uppercase'>Status: {mesa.status}</span>
         </div>
     );
 }
