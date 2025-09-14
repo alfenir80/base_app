@@ -77,8 +77,6 @@ function GerenciadorPedidosPage() {
   const handAddItemToOrder = (item: ItemMenuType) => {
     if (!selectedMesa) return;
 
-    let mesaAtualizadaNoSet: MesaType | null = null; // Usaremos para atualizar selectedMesa
-
     setMesas((prevMesas) => {
       const updatedMesasArray = prevMesas.map((mesa) => {
         if (mesa.numero === selectedMesa.numero) {
@@ -96,7 +94,6 @@ function GerenciadorPedidosPage() {
           }
           
           const updatedMesa = { ...mesa, order: updatedOrders };
-          mesaAtualizadaNoSet = updatedMesa; // Armazena a mesa que foi modificada
           return updatedMesa;
         }
         return mesa; 
