@@ -1,13 +1,8 @@
 
-import React from 'react';
-
-type StatusMesa = 'disponivel' | 'ocupada';
+import type { MesaType } from '../types';
 
 interface MesaProps {
-    mesa: {
-      numero: number;
-      status: StatusMesa;
-    };
+    mesa: MesaType;
     onClick: () => void;
 }
 

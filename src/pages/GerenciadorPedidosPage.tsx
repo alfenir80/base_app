@@ -1,85 +1,39 @@
-
-import { useState, useEffect } from 'react'; // Importa useEffect
+import { useState } from 'react';
 import Mesa from '../components/Mesa';
 import Modal from '../components/Modal';
 import Cardapio from '../components/Cardapio';
-
-// --- Interfaces e Tipos (mantidos como antes) ---
-type StatusMesa = 'disponivel' | 'ocupada';
-
-interface MesaType {
-  numero: number;
-  status: StatusMesa;
-  order: OrderItemType[];
-}
-
-interface ItemMenuType {
-  id: number;
-  nome: string;
-  preco: number;
-  categoria: string;
-}
-
-interface OrderItemType {
-  id: number;
-  item: ItemMenuType;
-  quantidade: number;
-}
-// --- Fim das Interfaces ---
-
-// --- Dados do Menu (mantidos como antes) ---
-const menu: ItemMenuType[] = [
-  { id: 1, nome: 'Coxinha', preco: 5.0, categoria: 'Salgado' },
-  { id: 2, nome: 'Brigadeiro', preco: 3.0, categoria: 'Doce' },
-  { id: 3, nome: 'Refrigerante', preco: 4.0, categoria: 'Bebida' },
-  { id: 4, nome: 'Pizza', preco: 20.0, categoria: 'Salgado' },
-  { id: 5, nome: 'Sorvete', preco: 6.0, categoria: 'Doce' },
-  { id: 6, nome: 'Suco', preco: 5.0, categoria: 'Bebida' },
-];
-// --- Fim dos Dados do Menu ---
+import type { MesaType, ItemMenuType } from '../types';
+import { menu } from '../data/menuData';
 
 function GerenciadorPedidosPage() {
   // --- Estados ---
   const [mesas, setMesas] = useState<MesaType[]>(
     Array.from({ length: 10 }, (_, i) => ({
       numero: i + 1,
-      status: Math.random() > 0.5 ? 'disponivel' : 'ocupada',
+      status: 'disponivel', // Começam disponíveis
       order: [],
     }))
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedMesa, setSelectedMesa] = useState<MesaType | null>(null);
+  const [selectedMesaId, setSelectedMesaId] = useState<number | null>(null);
   // --- Fim dos Estados ---
+
+  // Deriva a mesa selecionada a partir do estado principal
+  const selectedMesa = mesas.find(m => m.numero === selectedMesaId) || null;
 
   // --- Funções de Manipulação ---
   const handleClickMesa = (numero: number) => {
-    const mesaEncontrada = mesas.find((m) => m.numero === numero);
-
-    if (mesaEncontrada) {
-      // Atualiza o status da mesa e o estado geral 'mesas'
-      setMesas((prevMesas) =>
-        prevMesas.map((m) =>
-          m.numero === numero
-            ? {
-                ...m,
-                status: m.status === 'disponivel' ? 'ocupada' : 'disponivel',
-              }
-            : m
-        )
-      );
-      // Define a mesa selecionada para o modal e abre o modal
-      setSelectedMesa(mesaEncontrada); // Define a mesa que foi clicada
-      setIsModalOpen(true);
-    }
+    setSelectedMesaId(numero);
+    setIsModalOpen(true);
   };
   
   const handAddItemToOrder = (item: ItemMenuType) => {
-    if (!selectedMesa) return;
+    if (!selectedMesaId) return;
 
     setMesas((prevMesas) => {
-      const updatedMesasArray = prevMesas.map((mesa) => {
-        if (mesa.numero === selectedMesa.numero) {
+      return prevMesas.map((mesa) => {
+        if (mesa.numero === selectedMesaId) {
           const existingOrderItem = mesa.order.find((order) => order.item.id === item.id);
           let updatedOrders;
 
@@ -93,38 +47,34 @@ function GerenciadorPedidosPage() {
             updatedOrders = [...mesa.order, { id: Date.now(), item, quantidade: 1 }];
           }
           
-          const updatedMesa = { ...mesa, order: updatedOrders };
-          return updatedMesa;
+          return { 
+            ...mesa, 
+            order: updatedOrders,
+            status: 'ocupada' // Muda para ocupada ao adicionar item
+          };
         }
         return mesa; 
       });
-      return updatedMesasArray;
     });
+  };
 
-    // A atualização de selectedMesa será feita no useEffect para garantir sincronia
-    // setSelectedMesa(mesaAtualizadaNoSet); // REMOVIDO AQUI
+  const handleLiberarMesa = () => {
+    if (!selectedMesaId) return;
+
+    setMesas((prevMesas) => 
+      prevMesas.map(mesa => 
+        mesa.numero === selectedMesaId 
+          ? { ...mesa, status: 'disponivel', order: [] }
+          : mesa
+      )
+    );
+    handleCloseModal();
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedMesa(null); // Limpa a mesa selecionada ao fechar
-  }
-  // --- Fim das Funções de Manipulação ---
-
-  // --- EFEITO COLATERAL PARA SINCRONIZAR SELECTEDMESA COM MESAS ---
-  // Este useEffect garante que 'selectedMesa' reflita o estado atual de 'mesas'
-  // sempre que 'mesas' for atualizado e 'selectedMesa' ainda estiver definido.
-  useEffect(() => {
-    if (selectedMesa && mesas.length > 0) {
-      // Encontra a mesa mais recente no array 'mesas'
-      const mesaAtual = mesas.find(m => m.numero === selectedMesa.numero);
-      // Atualiza selectedMesa apenas se a mesa encontrada for diferente da mesa atual no estado
-      // Isso evita um loop infinito se a mesa não tiver mudado
-      if (mesaAtual && JSON.stringify(mesaAtual) !== JSON.stringify(selectedMesa)) {
-        setSelectedMesa(mesaAtual);
-      }
-    }
-  }, [mesas, selectedMesa]); // Executa quando 'mesas' ou 'selectedMesa' mudam
+    setSelectedMesaId(null);
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 text-gray-100 p-8">
@@ -147,7 +97,18 @@ function GerenciadorPedidosPage() {
           title={`Mesa ${selectedMesa.numero} - ${selectedMesa.status === 'disponivel' ? 'Disponível' : 'Ocupada'}`}
         >
           <div className="p-4 bg-gray-800 rounded-md">
-            <h2 className="text-2xl font-semibold mb-4 text-blue-300">Pedido Atual:</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-semibold text-blue-300">Pedido Atual:</h2>
+              {selectedMesa.order.length > 0 && (
+                <button 
+                  onClick={handleLiberarMesa}
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md font-bold transition-colors"
+                >
+                  Fechar Conta
+                </button>
+              )}
+            </div>
+            
             {selectedMesa.order.length === 0 ? (
               <p className="text-gray-400">Nenhum item no pedido.</p>
             ) : (
@@ -160,6 +121,15 @@ function GerenciadorPedidosPage() {
                   </li>
                 ))}
               </ul>
+            )}
+            
+            {selectedMesa.order.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-gray-700 flex justify-between items-center">
+                <span className="text-xl font-bold">Total:</span>
+                <span className="text-2xl font-bold text-green-400">
+                  R$ {selectedMesa.order.reduce((acc, orderItem) => acc + (orderItem.item.preco * orderItem.quantidade), 0).toFixed(2)}
+                </span>
+              </div>
             )}
           </div>
           <Cardapio menu={menu} onAddItem={handAddItemToOrder} />

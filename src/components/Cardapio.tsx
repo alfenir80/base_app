@@ -1,11 +1,5 @@
 import React from "react";
-
-type ItemMenuType = {
-  id: number;
-  nome: string;
-  preco: number;
-  categoria: string;
-}
+import type { ItemMenuType } from "../types";
 
 interface CardapioProps {
   menu: ItemMenuType[]; 
