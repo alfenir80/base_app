@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Restaurant {
+  id               String     @id @default(uuid())
+  nome             String
+  cnpj             String?    @unique
+  plano_assinatura String     @default("free")
+  criado_em        DateTime   @default(now())
+  users            User[]
+  tables           Table[]
+  categories       Category[]
+  products         Product[]
+  orders           Order[]
+}
+
+model User {
+  id            String     @id @default(uuid())
+  restaurant_id String
+  nome          String
+  email         String     @unique
+  senha         String
+  role          String     @default("garcom") // admin, garcom, cozinha
+  restaurant    Restaurant @relation(fields: [restaurant_id], references: [id])
+  orders        Order[]
+}
+
+model Table {
+  id            String     @id @default(uuid())
+  restaurant_id String
+  numero        Int
+  status        String     @default("disponivel") // disponivel, ocupada
+  restaurant    Restaurant @relation(fields: [restaurant_id], references: [id])
+  orders        Order[]
+}
+
+model Category {
+  id            String     @id @default(uuid())
+  restaurant_id String
+  nome          String
+  restaurant    Restaurant @relation(fields: [restaurant_id], references: [id])
+  products      Product[]
+}
+
+model Product {
+  id            String      @id @default(uuid())
+  restaurant_id String
+  category_id   String
+  nome          String
+  preco         Float
+  ativo         Boolean     @default(true)
+  restaurant    Restaurant  @relation(fields: [restaurant_id], references: [id])
+  category      Category    @relation(fields: [category_id], references: [id])
+  order_items   OrderItem[]
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  restaurant_id String
+  table_id      String
+  user_id       String?
+  status        String      @default("aberto") // aberto, pago, cancelado
+  total         Float       @default(0.0)
+  criado_em     DateTime    @default(now())
+  restaurant    Restaurant  @relation(fields: [restaurant_id], references: [id])
+  table         Table       @relation(fields: [table_id], references: [id])
+  user          User?       @relation(fields: [user_id], references: [id])
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id             String  @id @default(uuid())
+  order_id       String
+  product_id     String
+  quantidade     Int
+  preco_unitario Float
+  status         String  @default("pendente") // pendente, preparando, entregue
+  order          Order   @relation(fields: [order_id], references: [id])
+  product        Product @relation(fields: [product_id], references: [id])
+}
